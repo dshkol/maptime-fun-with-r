@@ -84,3 +84,25 @@ ggsave("ggmap_example_2.png")
 
 # Lets take a look at prices for whole apartments
 
+listings_apt <- listings[listings$room_type == "Entire home/apt",]
+ggmap(vanMap) + geom_point(aes(x = longitude, y = latitude, colour = price), alpha = 0.95, size = 1, data = listings_apt) + scale_colour_gradient(low = "lightgrey", high = "darkred", limits = c(100,750)) + ggtitle("AirBnB Listings (Entire Home/Apartment)") + theme(legend.position = "bottom", axis.text = element_blank(), axis.title = element_blank(), axis.ticks = element_blank(), plot.title = element_text(face = "bold") ) 
+
+ggmap(vanMap) + geom_density2d(aes(x = longitude, y = latitude), data = listings_apt) +  stat_density2d(aes(x = longitude, y = latitude, colour = price, alpha = ..level..), geom = "polygon", data = listings_apt) + ggtitle("title") + scale_colour_gradient(low = "lightgrey", high = "darkred")  + theme(legend.position = "bottom", axis.text = element_blank(), axis.title = element_blank(), axis.ticks = element_blank(), plot.title = element_text(face = "bold") ) 
+
+ggsave("ggmap_example_3.png")
+
+
+
+
+# Load neighbourhood shapes
+
+localArea <- readOGR(dsn = "localAreaBoundary", layer = "csg_neighborhood_areas")
+localArea <- spTransform(localArea,CRS("+proj=longlat +datum=WGS84"))
+
+
+
+# Turn the listings into R Spatial Format
+listings.coordinates <- cbind.data.frame(listings$longitude,listings$latitude)
+listings.sp <- SpatialPointsDataFrame(listings.coordinates, data = listings)
+listings.sp@proj4string <- localArea@proj4string
+
