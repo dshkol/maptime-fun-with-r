@@ -104,5 +104,24 @@ localArea <- spTransform(localArea,CRS("+proj=longlat +datum=WGS84"))
 # Turn the listings into R Spatial Format
 listings.coordinates <- cbind.data.frame(listings$longitude,listings$latitude)
 listings.sp <- SpatialPointsDataFrame(listings.coordinates, data = listings)
-listings.sp@proj4string <- localArea@proj4string
+#listings.sp@proj4string <- localArea@proj4string
+
+# We can take a look whether this works
+plot(localArea)
+plot(listings.sp, add = TRUE)
+
+
+# Let's check on Jens' assertion that neighbourhoods are incorrect. No evidence of this! 
+plot(listings.sp[listings.sp$neighbourhood == "Mount Pleasant",])
+plot(localArea[localArea$NAME == "Mount Pleasant",], add = TRUE)
+
+plot(listings.sp[listings.sp$neighbourhood == "Kitsilano",])
+plot(localArea[localArea$NAME == "Kitsilano",], add = TRUE)
+
+plot(listings.sp[listings.sp$neighbourhood == "Downtown Eastside",])
+plot(localArea[localArea$NAME == "Downtown Eastside",], add = TRUE)
+
+# Let's create some neighbourhood-level statistics
+
+
 
