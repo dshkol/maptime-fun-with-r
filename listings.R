@@ -29,11 +29,18 @@ listings$room_type <- as.factor(listings$room_type)
 
 # Before we get into the mapping part, let's take a look at some of the data using the ubiquitous ggplot2 graphics library.
 
-ggplot(listings, aes(factor(room_type))) + geom_bar
+ggplot(listings, aes(factor(room_type))) + geom_bar()
+
+# ggplot(listings, aes(factor(room_type), fill = room_type)) + geom_bar() +  scale_fill_manual(values = c("Entire home/apt" = "#fd5c63","Private room" = "grey30","Shared room" = "grey30")) + ylab("Number of Listings") + xlab("Room Type") + ggtitle("Vancouver AirBnB Listings by Room Type") + theme(plot.title = element_text(face = "bold"), legend.position = "none")
+ggsave("listings_count_by_type.png")
+
 
 ggplot(listings, aes(factor(neighbourhood))) + geom_bar() + coord_flip()
 
 ggplot(listings, aes(factor(neighbourhood), fill = room_type)) + geom_bar() + coord_flip()
+
+ggplot(listings, aes(factor(neighbourhood), fill = room_type)) + geom_bar() + coord_flip() + xlab("Number of Listings") + ylab("Neighbourhood") + scale_fill_manual(name = "Room Type",values = c("#fd5c63","#2ad2c9","#fdbd10")) + ggtitle("Vancouver AirBnB Listings by Type and Neighbourhood") +theme(plot.title = element_text(face = "bold"))
+ggsave("listings_county_by_type_neighbourhood.png")
 
 # Take a look at some group statistics for neighbourhoods and room types. Group statistics are very well handled using another Hadley-verse package 'dplyr'.
 
@@ -123,5 +130,9 @@ plot(localArea[localArea$NAME == "Downtown Eastside",], add = TRUE)
 
 # Let's create some neighbourhood-level statistics
 
+neighbourhood_prices_home <- neighbourhood_prices[neighbourhood_prices$room_type == "Entire home/apt",]
+neighbourhood_prices_home <- neighbourhood_prices_home[!is.na(neighbourhood_prices_home$neighbourhood),]
+neighbourhood_prices_home$room_type <- NULL
 
+nhoods <- sp::merge(localArea,neighbourhood_prices_home,by.x = "NAME",by.y="neighbourhood", all.x = TRUE)
 
