@@ -131,8 +131,15 @@ plot(localArea[localArea$NAME == "Downtown Eastside",], add = TRUE)
 # Let's create some neighbourhood-level statistics
 
 neighbourhood_prices_home <- neighbourhood_prices[neighbourhood_prices$room_type == "Entire home/apt",]
+neighbourhood_prices_home <- as.data.frame(neighbourhood_prices_home)
 neighbourhood_prices_home <- neighbourhood_prices_home[!is.na(neighbourhood_prices_home$neighbourhood),]
 neighbourhood_prices_home$room_type <- NULL
 
-nhoods <- sp::merge(localArea,neighbourhood_prices_home,by.x = "NAME",by.y="neighbourhood", all.x = TRUE)
+nhoods <- sp::merge(x = localArea,y = neighbourhood_prices_home,by.x = "NAME",by.y="neighbourhood", all.x = TRUE)
 
+
+# ggplot of sp objects doesnt work, have to fortify.
+ggplot() + geom_polygon(data = nhoods, aes(x = long, y = lat, group = group, fill = median_price), color = "black", size = 0.25)
+
+# Base plotting
+spplot(nhoods,zcol="median_price")
