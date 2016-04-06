@@ -32,6 +32,10 @@ leaflet(listings) %>% addTiles() %>% addCircleMarkers(color = ~pal(room_type), s
 
 # Polygons
 
+pal <- colorNumeric("YlGn", NULL, n = 5)
 
+area_popup <- paste0("<strong>Neighbourhood: </strong>",nhoods@data$NAME, "<br><strong>Median Price/Night: </strong>", nhoods@data$median_price,"<br><strong>Number of listings: </strong>",nhoods@data$observations)
+
+leaflet(data = nhoods) %>% addProviderTiles("CartoDB.Positron") %>% addPolygons(fillColor = ~pal(median_price), fillOpacity = 0.8, color = "#BDBDC3", weight = 1, popup = area_popup) %>% addLegend("topright", pal = pal, values = ~median_price, title = "Median Price", labFormat = labelFormat(prefix = "$"), opacity = 1)
 
 # Layers https://rstudio.github.io/leaflet/showhide.html

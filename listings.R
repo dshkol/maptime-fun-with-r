@@ -4,6 +4,7 @@ library(dplyr)
 library(sp)
 library(rgdal)
 library(leaflet)
+library(maptools)
 
 
 #big file
@@ -139,7 +140,27 @@ nhoods <- sp::merge(x = localArea,y = neighbourhood_prices_home,by.x = "NAME",by
 
 
 # ggplot of sp objects doesnt work, have to fortify.
-ggplot() + geom_polygon(data = nhoods, aes(x = long, y = lat, group = group, fill = median_price), color = "black", size = 0.25)
+nhoods_gg <- fortify(nhoods, region = "NAME")
+
+ggplot() + geom_map(data = neighbourhood_prices_home, aes(map_id = neighbourhood, fill = median_price), map = nhoods_gg) + expand_limits(x = nhoods_gg$long, y = nhoods_gg$lat) 
+
+# Make prettier
+
+centroids <- as.data.frame(coordinates(localArea))
+#low = "#A80303", high = "#FFFB00"
+ggplot() + geom_map(data = neighbourhood_prices_home, aes(map_id = neighbourhood, fill = median_price), colour = "white", map = nhoods_gg) + expand_limits(x = nhoods_gg$long, y = nhoods_gg$lat) + scale_fill_gradient(low = "darkgrey", high = "darkred", name = "Median Price") + geom_text(data = centroids, aes(x = V1, y = V2, label = neighbourhood), colour = "white", size = 3) + theme(panel.background = element_blank(), panel.grid.minor = element_blank(), axis.line = element_blank(), axis.text.x = element_blank(), axis.text.y = element_blank(), axis.ticks = element_blank(), axis.title.x = element_blank(), axis.title.y = element_blank()) 
+
+
 
 # Base plotting
 spplot(nhoods,zcol="median_price")
+
+# small multiples
+
+ggplot() + geom_map(data = neighbourhood_prices_home, aes(map_id = neighbourhood, fill = median_price), map = nhoods_gg) + expand_limits(x = nhoods_gg$long, y = nhoods_gg$lat) + facet_wrap(~neighbourhood)
+
+
+
+
+# Prettier
+ggplot() + geom_map(data = neighbourhood_prices_home, aes(map_id = neighbourhood, fill = median_price), map = nhoods_gg) + expand_limits(x = nhoods_gg$long, y = nhoods_gg$lat) + facet_wrap(~neighbourhood) + scale_fill_gradient(low = "darkgrey", high = "darkred", name = "Median Price") + theme(panel.background = element_blank(), panel.grid.minor = element_blank(), axis.line = element_blank(), axis.text.x = element_blank(), axis.text.y = element_blank(), axis.ticks = element_blank(), axis.title.x = element_blank(), axis.title.y = element_blank()) 
